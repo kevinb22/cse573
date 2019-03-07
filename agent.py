@@ -43,6 +43,7 @@ class A3CAgent:
         model_input = ModelInput()
         model_input.state = self.preprocess_frame(self.episode.state_for_agent())
         model_input.hidden = self.hidden
+        model_input.additional_state_info = self.preprocess_additional_state_info(self.episode.additional_state_info())
         model_output = self.model.forward(model_input)
         return model_output
 
@@ -152,6 +153,15 @@ class A3CAgent:
         frame = resnet_input_transform(frame, 84)
         state = torch.Tensor(frame)
         return gpuify(state.unsqueeze(0), self.gpu_id)
+
+    def preprocess_additional_state_info(self, bool_array):
+        int_array = [0, 0]
+        for i in range(0, len(bool_array)):
+            if bool_array[i]:
+                int_array[i] = 1
+        additional_state_info = torch.Tensor(int_array)
+        return gpuify(additional_state_info.unsqueeze(0), self.gpu_id)
+        
 
     def exit(self):
         self.episode.environment.controller.stop()

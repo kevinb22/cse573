@@ -40,6 +40,9 @@ class Episode:
     def state_for_agent(self):
         return self.environment.current_frame
 
+    def additional_state_info(self):
+        return self.seen_targets
+
     def step(self, action_as_int):
         action = self.actions_list[action_as_int]
         self.actions_taken.append(action)
